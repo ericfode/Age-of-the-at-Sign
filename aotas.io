@@ -13,40 +13,48 @@ Renderer:= Object clone do(
      Render := method()
 )
 
+Sentient:= Object clone do(
+     PosX:=0
+     PoxY:=0
+)
+
 Updater := Object clone do(
      Update := method()
 )
 
-Player := Object clone do(
+Curser := Object clone do(
      appendProto("Renderer")
-     symbol := "@"
+     appendProto("Sentient")
+     PosX:=10
+     PosY:=10
+     init := method(
+	  PosX =10
+	  PosY =10
+     )
+     symbol := "X"
      Render := method(
 	  Curses writeCharacter(symbol at(0))
+     )
+     MoveUp := method(
+	  PosY = PosY-1
+     )
+     MoveRight := method(
+	  PosX = PosX+1
+     )
+     MoveLeft := method(
+	  PosX = PosX-1
+     )
+     MoveDown := method(
+	  PosY = PosY+1
      )
 )
 
 Tile := Renderer clone do(
-     Objects := List clone
-     init := method(
-	  Objects = List clone
-     )
+
      symbol := "."
-     Render := method(if(Objects size == 0,
-			 Curses writeCharacter(symbol at(0)),
-			 for(counter, (Objects size),0,-1,
-			      if(Objects at(counter) isKindOf("Renderer"),
-				   Objects at(counter) Render
-				   break,
-				   continue
-			      )
-				 
-			 )
-		    )
+     Render := method(
+	  Curses writeCharacter(symbol at(0))
      )
-     AddObject := method(item, 
-		 Objects append(item)
-     )
-     
 )
 
 World := Renderer clone do(
@@ -56,6 +64,26 @@ World := Renderer clone do(
      )
      SizeX := 0
      SizeY := 0
+     
+     Renderables := List clone
+     
+     RenderRenderables := method(topX,topY,lowerX,lowerY,
+	  origX:= Curses x
+	  origY:= Curses y
+	  Renderables foreach(index,item,
+	       if( item isKindOf("Renderer") and item isKindOf("Sentient"),
+		    if(
+			 (item PosX >= lowerX) and
+			 (item PosX <= topX) and
+			 (item PosY >= lowerY) and 
+			 (item PosY <= topY),
+			 Curses move(origX+(item PosX-lowerX),origY+(item PosY-lowerY))
+			 item Render
+		    )
+	       )
+	  )
+     )
+	  
      
      InitTiles := method(SizeXin,SizeYin,
 	  SizeX = SizeXin
@@ -67,22 +95,31 @@ World := Renderer clone do(
 	       )
 	  )
      )
-     Render := method(topX, topY, lowerX, lowerY,
-	  if(topX> SizeX, topX = SizeX)
-	  if(topY> SizeY, topY = SizeY)
-	  if(lowerX<0,lowerX = 0)
-	  if(lowerY<0,lowerY = 0)
-	  
+     
+     RenderTiles := method(topX, topY, lowerX, lowerY,
 	  for(indexY, lowerY, topY,
 	       for(indexX, lowerX, topX, 
 		    WorldData at(indexY) at(indexX) Render
 		//    Curses move(Curses x+1, Curses height)
 	       )
 	       Curses move(1,Curses y+1)
-	  )
+	  )  
+     )
+     
+     Render := method(topX, topY, lowerX, lowerY,
+	  if(topX> SizeX, topX = SizeX)
+	  if(topY> SizeY, topY = SizeY)
+	  if(lowerX<0,lowerX = 0)
+	  if(lowerY<0,lowerY = 0)
+	  origX:= Curses x
+	  origY:= Curses y
+	  RenderTiles(topX,topY,lowerX,lowerY)
+	  Curses move(origX,origY)
+	  RenderRenderables(topX,topY,lowerX,lowerY)
+
      )
      AddObject := method(Renderable,PosX,PosY,
-	  WorldData at(PosY) at(PosX) AddObject(Renderable)
+	 Renderables append(Renderable)
      )
 )
 
@@ -114,7 +151,7 @@ Interface := Object clone do(
      WorldBoxX:=98
      WorldBoxY:=28
      GameWorld:= World clone
-     GamePlayer := Player clone
+     GameCurser := Curser clone
      MsgBox := MessageBox clone
      RenderInterface := method(
 	  for(i,0,ViewportX,
@@ -141,7 +178,7 @@ Interface := Object clone do(
      )
      
      RenderWorldFrame := method(	      
-	  MsgBox AddMessage("Rendering")
+	 // MsgBox AddMessage("Rendering")
 	  Curses move(1,1)
 	  GameWorld Render(98,28,0,0)
      )
@@ -159,10 +196,20 @@ Interface := Object clone do(
      )
      
      Update := method(
+     
 	  c := Curses asyncReadCharacter
 	  if(c,
 	       //esc
 	       if(c== 27, Lobby exit)
+	       
+	       if(c== "a" at(0), AddMessage("Moving Left")
+		    GameCurser MoveLeft)
+	       if(c== "w" at(0), AddMessage("Moving Up")
+		    GameCurser MoveUp)
+	       if(c== "s" at(0), AddMessage("Moving Down")
+		    GameCurser MoveDown)
+	       if(c== "d" at(0), AddMessage("Moving Right")
+		    GameCurser MoveRight)
 	  )
 	  Curses clear
      )
@@ -175,15 +222,17 @@ Interface := Object clone do(
 Game := Object clone do(
      GameWorld := World clone
      GameWorld InitTiles(200,200)
-     GamePlayer := Player clone
-     GameWorld AddObject(Player,10,10)
+     GameCurser := Curser clone
+     GameCurser PosX := 10
+     GameCurser PosY := 10
+     
+     GameWorld AddObject(GameCurser)
      GameInterface := Interface clone
      GameInterface GameWorld = GameWorld
-     GameInterface GamePlayer = GamePlayer
+     GameInterface GameCurser = GameCurser
      loop(
 	  GameInterface Display
 	  GameInterface Update
-	//  System sleep(0.05)
      )
 )
 
