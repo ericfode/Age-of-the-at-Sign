@@ -7,6 +7,8 @@ Curses do(
      clear
 )
 
+Lobby exit := method(Curses end; System exit)
+
 Renderer:= Object clone do(
      Render := method()
 )
@@ -82,7 +84,7 @@ World := Renderer clone do(
      )
 )
 interface := Object clone do(
-     initInterface = method(
+     InitInterface = method(
 	  for(i,0,100,
 	       Curses move(i,0)
 	       Curses write("-")
@@ -101,16 +103,30 @@ interface := Object clone do(
 	  )
      )
      RenderWorldFrame := method(world,
+	  Curses move(1,1)
+	  world Render(98,28,0,0)
+	  Curses Refresh
+     )
      
+     DoEvents := method(
+	  c := Curses asyncReadCharacter
+	  if(c,
+	       //esc
+	       if(c== 27, Lobby exit)
+	  )
+     )
+	       
      
 )
      
 Game := Object clone do(
      GameWorld := World clone
      GameWorld InitTiles(200,200)
-     GameWorld Render(20,20,0,0)
-     Curses refresh
-     GameWorld AddObject(Player clone, 10, 10)
-     GameWorld Render(30,40,0,0)
+     GameInterface := Interface clone
+     GameInterface InitInterface
+     GameInterface RenderWorldFrame
+     loop(
+	  GameInterface DoEvents
+     )
 )
 
