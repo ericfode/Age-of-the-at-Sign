@@ -114,6 +114,7 @@ Interface := Object clone do(
      WorldBoxX:=98
      WorldBoxY:=28
      GameWorld:= World clone
+     GamePlayer := Player clone
      MsgBox := MessageBox clone
      RenderInterface := method(
 	  for(i,0,ViewportX,
@@ -173,9 +174,11 @@ Interface := Object clone do(
 Game := Object clone do(
      GameWorld := World clone
      GameWorld InitTiles(200,200)
-     GameWorld AddObject(Player clone,10,10)
+     GamePlayer := Player clone
+     GameWorld AddObject(Player,10,10)
      GameInterface := Interface clone
      GameInterface GameWorld = GameWorld
+     GameInterface GamePlayer = GamePlayer
      loop(
 	  GameInterface Display
 	  GameInterface Update

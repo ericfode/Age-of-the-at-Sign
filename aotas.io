@@ -135,6 +135,7 @@ Interface := Object clone do(
 	  )
 
      )
+     
      AddMessage := method(message,
 	  MsgBox AddMessage(message)
      )
