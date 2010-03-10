@@ -21,7 +21,7 @@ Player := Object clone do(
      appendProto("Renderer")
      symbol := "@"
      Render := method(
-	  Curses write(symbol) 
+	  Curses writeCharacter(symbol at(0))
      )
 )
 
@@ -32,7 +32,7 @@ Tile := Renderer clone do(
      )
      symbol := "."
      Render := method(if(Objects size == 0,
-			 Curses writeCharafcter(symbol at(0)),
+			 Curses writeCharacter(symbol at(0)),
 			 for(counter, (Objects size),0,-1,
 			      if(Objects at(counter) isKindOf("Renderer"),
 				   Objects at(counter) Render
@@ -72,18 +72,17 @@ World := Renderer clone do(
 	  if(topY> SizeY, topY = SizeY)
 	  if(lowerX<0,lowerX = 0)
 	  if(lowerY<0,lowerY = 0)
-	       Cow
-	  for(indexY,topY, lowerY,
-	       for(indexX, lowerX, upperX, 
+	  
+	  for(indexY, lowerY, topY,
+	       for(indexX, lowerX, topX, 
 		    WorldData at(indexY) at(indexX) Render
-		    Curses write("!")
 		//    Curses move(Curses x+1, Curses height)
 	       )
-	       Curses move(1,Curses y-1)
+	       Curses move(1,Curses y+1)
 	  )
      )
      AddObject := method(Renderable,PosX,PosY,
-	  WorldData at(PosX) at(PosY) AddObject(Renderable)
+	  WorldData at(PosY) at(PosX) AddObject(Renderable)
      )
 )
 
@@ -114,9 +113,8 @@ Interface := Object clone do(
      MessageBoxY:=9
      WorldBoxX:=98
      WorldBoxY:=28
-     MsgBox := MessageBox clone
      GameWorld:= World clone
-     GameWorld InitTiles(200,200)
+     MsgBox := MessageBox clone
      RenderInterface := method(
 	  for(i,0,ViewportX,
 	       Curses move(i,0)
@@ -136,18 +134,28 @@ Interface := Object clone do(
 	  )
 
      )
+     AddMessage := method(message,
+	  MsgBox AddMessage(message)
+     )
      
-     RenderWorldFrame := method()
+     RenderWorldFrame := method(	      
+	  MsgBox AddMessage("Rendering")
+	  Curses move(1,1)
+	  GameWorld Render(98,28,0,0)
+     )
+     
+     RenderMsgBoxFrame := method(
+	  Curses move(1,31)
+	  MsgBox Render
+     )
      
      Display := method(
 	  RenderInterface
-	       MsgBox AddMessage("Rendering")
-	       Curses move(1,1)
-	       GameWorld Render(98,28,0,0)
-	  Curses move(1,31)
-	  MsgBox Render
+	  RenderWorldFrame
+	  RenderMsgBoxFrame
 	  Curses refresh
      )
+     
      Update := method(
 	  c := Curses asyncReadCharacter
 	  if(c,
@@ -165,11 +173,13 @@ Interface := Object clone do(
 Game := Object clone do(
      GameWorld := World clone
      GameWorld InitTiles(200,200)
+     GameWorld AddObject(Player clone,10,10)
      GameInterface := Interface clone
+     GameInterface GameWorld = GameWorld
      loop(
 	  GameInterface Display
 	  GameInterface Update
-	  System sleep(0.05)
+	//  System sleep(0.05)
      )
 )
 
