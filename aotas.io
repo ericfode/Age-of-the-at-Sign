@@ -74,14 +74,35 @@ World := Renderer clone do(
 	       for(indexY, topY,lowerY,-1,
 		    WorldData at(indexX) at(indexY) Render
 	       )
-	       Curses move(0,Curses height-1)
+	       Curses move(0,Curses height+1)
 	  )
      )
      AddObject := method(Renderable,PosX,PosY,
 	  WorldData at(PosX) at(PosY) AddObject(Renderable)
      )
 )
-interface := Renderer clone do(
+interface := Object clone do(
+     initInterface = method(
+	  for(i,0,100,
+	       Curses move(i,0)
+	       Curses write("-")
+	       Curses move(i,30)
+	       Curses write("-")
+	       Curses move(i,40)
+	       Curses write("-")
+	       
+	  )
+	  
+	  for(i,0,40,
+	       Curses move(0,i)
+	       Curses write("|")
+	       Curses move(100,i)
+	       Curses write("|")
+	  )
+     )
+     RenderWorldFrame := method(world,
+     
+     
 )
      
 Game := Object clone do(

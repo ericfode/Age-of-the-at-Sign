@@ -74,7 +74,7 @@ World := Renderer clone do(
 	       for(indexY, topY,lowerY,-1,
 		    WorldData at(indexX) at(indexY) Render
 	       )
-	       Curses move(0,5)
+	       Curses move(0,Curses height+1)
 	  )
      )
      AddObject := method(Renderable,PosX,PosY,
