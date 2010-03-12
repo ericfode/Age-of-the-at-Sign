@@ -4,7 +4,4 @@ Tile := Renderer clone do(
      Render := method(
 	  Curses writeCharacter(symbol at(0))
      )
-     print := method(
-	  symbol print
-     )
 )
