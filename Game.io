@@ -3,6 +3,7 @@ Game := Object clone do(
 
      GameWorld := World clone
      GameWorld InitTiles(200,200)
+     GameWorld GenerateTerrain
      GameCurser := Curser clone
      GameCurser PosX := 10
      GameCurser PosY := 10
@@ -15,6 +16,7 @@ Game := Object clone do(
 	  GameInterface GameCurser = GameCurser
 	  loop(
 	       GameInterface Display
+	       System sleep(0.03)
 	       GameInterface Update
 	  )
      )

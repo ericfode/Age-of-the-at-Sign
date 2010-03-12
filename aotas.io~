@@ -10,7 +10,6 @@ Curses do(
 Lobby exit := method(Curses end; System exit)
 
 Game := Game clone
-Game InitGame
 Game StartLoop
 
 

@@ -1,12 +1,13 @@
 
 Game := Object clone do(
-     InitGame:= method(
-	  GameWorld := World clone
-	  GameWorld InitTiles(200,200)
-	  GameCurser := Curser clone
-	  GameCurser PosX := 10
-	  GameCurser PosY := 10
-     )
+
+     GameWorld := World clone
+     GameWorld InitTiles(200,200)
+     GameWorld GenerateTerrain
+     GameCurser := Curser clone
+     GameCurser PosX := 10
+     GameCurser PosY := 10
+
      
      StartLoop:= method(
 	  GameWorld AddObject(GameCurser)
@@ -15,6 +16,7 @@ Game := Object clone do(
 	  GameInterface GameCurser = GameCurser
 	  loop(
 	       GameInterface Display
+	       System sleep(0.1)
 	       GameInterface Update
 	  )
      )

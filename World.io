@@ -27,6 +27,8 @@ World := Renderer clone do(
 	  
      
      InitTiles := method(SizeXin,SizeYin,
+	  Curses write("initiaing base tile set \n")
+	  Curses refresh
 	  SizeX = SizeXin
 	  SizeY = SizeYin
 	  for(indexY,0,SizeY,
@@ -36,6 +38,17 @@ World := Renderer clone do(
 	       )
 	  )
      )
+     //list 2 will overwrite list 1
+     merge := method(list1, list2,
+	  list2 foreach(index2X,item2X,
+	       item2X foreach(index2Y,item2Y,
+		    if(item2Y != 0,
+			 list1 at(index2X) atPut(index2Y,item2Y)
+		    )
+	       )
+	  )
+     )
+	  
      
      RenderTiles := method(topX, topY, lowerX, lowerY,
 	  for(indexY, lowerY, topY,
@@ -57,8 +70,15 @@ World := Renderer clone do(
 	  RenderTiles(topX,topY,lowerX,lowerY)
 	  Curses move(origX,origY)
 	  RenderRenderables(topX,topY,lowerX,lowerY)
-
      )
+     
+     GenerateTerrain := method(
+	  OG := ObjGen clone
+	  OG InitObjGen(200,200)
+	  toMerge := OG RunObjGen(8,2,5,4,Tree clone)
+	  merge(WorldData,toMerge)
+     )
+     
      AddObject := method(Renderable,PosX,PosY,
 	 Renderables append(Renderable)
      )

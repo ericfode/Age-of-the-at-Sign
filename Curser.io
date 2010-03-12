@@ -4,7 +4,12 @@ Curser := Object clone do(
      appendProto("Sentient")
      PosX:=10
      PosY:=10
+     ///NEEDS TO BE SET OUT SIDE OF THE CLASSS
+     MaxX:= 200
+     MaxY := 200
      init := method(
+	  MaxX =200
+	  MaxY =200
 	  PosX =10
 	  PosY =10
      )
@@ -13,16 +18,22 @@ Curser := Object clone do(
 	  Curses writeCharacter(symbol at(0))
      )
      MoveUp := method(
-	  PosY = PosY-1
+	  if(PosY>0,
+	  PosY = PosY-1)
      )
      MoveRight := method(
+	  if(PosX<MaxX,
 	  PosX = PosX+1
+	  )
      )
      MoveLeft := method(
-	  PosX = PosX-1
+     	  if(PosX>0,
+	  PosX = PosX-1)
      )
      MoveDown := method(
+	  if(PosY<MaxY,
 	  PosY = PosY+1
+	  )
      )
 )
 

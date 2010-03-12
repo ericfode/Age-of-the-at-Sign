@@ -5,6 +5,7 @@
 Curses do(
      begin
      clear
+     setBackgroundWhite
 )
 
 Lobby exit := method(Curses end; System exit)

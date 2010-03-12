@@ -5,6 +5,8 @@ Interface := Object clone do(
      MessageBoxY:=9
      WorldBoxX:=98
      WorldBoxY:=28
+     WorldBoxBotX := 0
+     WorldBoxBotY := 0
      GameWorld:= World clone
      GameCurser := Curser clone
      MsgBox := MessageBox clone
@@ -35,7 +37,22 @@ Interface := Object clone do(
      RenderWorldFrame := method(	      
 	 // MsgBox AddMessage("Rendering")
 	  Curses move(1,1)
-	  GameWorld Render(98,28,0,0)
+	  GameWorld Render(WorldBoxX,WorldBoxY,WorldBoxBotX,WorldBoxBotY)
+	  if(GameCurser PosX > WorldBoxX, 
+	       WorldBoxX = WorldBoxX +1
+	       WorldBoxBotX = WorldBoxBotX+1)
+	       
+	  if(GameCurser PosX < WorldBoxBotX, 
+	       WorldBoxX = WorldBoxX -1
+	       WorldBoxBotX = WorldBoxBotX-1)
+	       
+	  if(GameCurser PosY > WorldBoxY, 
+	       WorldBoxY = WorldBoxY +1
+	       WorldBoxBotY = WorldBoxBotY+1)
+	       
+	  if(GameCurser PosY < WorldBoxBotY, 
+	       WorldBoxY = WorldBoxY -1
+	       WorldBoxBotY = WorldBoxBotY-1)
      )
      
      RenderMsgBoxFrame := method(
@@ -65,6 +82,8 @@ Interface := Object clone do(
 		    GameCurser MoveDown)
 	       if(c== "d" at(0), AddMessage("Moving Right")
 		    GameCurser MoveRight)
+	       if(c== "b" at(0), AddMessage("Entering Build Mode")
+		    )
 	  )
 	  Curses clear
      )

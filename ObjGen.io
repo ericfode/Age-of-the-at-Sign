@@ -51,6 +51,13 @@ ObjGen := Object clone do(
 		    itemY = (itemY + Random value(0,10)) floor
 		    if(itemY > limit,
 			 for(dist,1,falloffDist,
+			      Curses write("    on obj ")
+			      Curses write((indexX*xSize+indexY) asSimpleString)
+			      Curses write(" of ")
+			      Curses write((xSize*ySize) asSimpleString)
+			      Curses write("\n")
+			      Curses refresh
+			      Curses move(0,Curses y-1)
 			      addNumberToSqr(itemY/(factor*dist),dist,indexX,indexY)
 			 )
 		    )
@@ -62,6 +69,13 @@ ObjGen := Object clone do(
  	  map foreach(indexX, itemX,
 	       itemX foreach(indexY,itemY,
 		    if(itemY < limit,
+			 Curses write("   on obj ")
+			 Curses write((indexX*xSize+indexY) asSimpleString)
+			 Curses write(" of ")
+			 Curses write((xSize*ySize) asSimpleString)
+			 Curses write("\n")
+			 Curses refresh
+			 Curses move(0,Curses y-1)
 			 map at(indexX) atPut(indexY,0),
 			 map at(indexX) atPut(indexY,Obj clone)
 		    )
@@ -74,9 +88,14 @@ ObjGen := Object clone do(
 	  initMap(xSize,ySize)
      )
      
-     RunObjGen := method(factor,falloffDist,limit,Obj
-	  firstPass(factor,falloffDist,limit)
-	  secondPass(limit,Obj)
+     RunObjGen := method(factor,falloffDist,limit1,limit2,Obj,
+	  Curses write("generating ObjSet\n")
+	  Curses write("    on pass one\n")
+	  Curses refresh
+	  firstPass(factor,falloffDist,limit1)
+	  Curses write("    on pass two\n")
+	  Curses refresh
+	  secondPass(limit2,Obj)
 	  return map
      )
 )
